@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ipm"
+name = "ignition-package-maker"
 version = "0.1.0"
 description = "Ignition Package Maker - convert Ignition script-python modules into publishable Python packages"
 readme = "README.md"
