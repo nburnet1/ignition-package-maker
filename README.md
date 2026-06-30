@@ -5,7 +5,7 @@ Convert Ignition `script-python` modules into publishable Python packages.
 ## Install
 
 ```bash
-pip install ipm
+pip install ignition-package-maker
 ```
 
 ## Getting Started
