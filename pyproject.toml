@@ -7,7 +7,7 @@ name = "ignition-package-maker"
 version = "0.1.0"
 description = "Ignition Package Maker - convert Ignition script-python modules into publishable Python packages"
 readme = "README.md"
-license = "MIT"
+license = "GPL-3.0-only"
 requires-python = ">=3.11"
 authors = [
     { name = "Noah Burnette", email = "noah.burnette.ext@verkor.com" },
