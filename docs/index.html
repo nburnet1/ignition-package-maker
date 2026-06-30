@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ipm - Ignition Package Maker</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-dim: #8b949e;
+            --accent: #f97316;
+            --accent-dim: #c2410c;
+            --green: #3fb950;
+            --blue: #58a6ff;
+            --purple: #bc8cff;
+            --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', monospace;
+            --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        .logo {
+            font-family: var(--mono);
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badges {
+            margin-top: 24px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        .terminal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 40px 0;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #1c2128;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+
+        .terminal-title {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-left: 8px;
+        }
+
+        .terminal-body {
+            padding: 20px 24px;
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .terminal-body .prompt { color: var(--green); }
+        .terminal-body .cmd { color: var(--text); }
+        .terminal-body .output { color: var(--text-dim); }
+        .terminal-body .highlight { color: var(--accent); }
+        .terminal-body .comment { color: #6e7681; }
+
+        section {
+            padding: 48px 0;
+        }
+
+        section + section {
+            border-top: 1px solid var(--border);
+        }
+
+        h2 {
+            font-family: var(--mono);
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        h2 .accent { color: var(--accent); }
+
+        .conversion {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        @media (max-width: 640px) {
+            .conversion {
+                grid-template-columns: 1fr;
+            }
+            .conversion-arrow { transform: rotate(90deg); }
+        }
+
+        .conversion-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            line-height: 1.9;
+        }
+
+        .conversion-block .dir { color: var(--blue); }
+        .conversion-block .file { color: var(--text-dim); }
+        .conversion-block .label {
+            font-family: var(--sans);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .conversion-arrow {
+            font-size: 2rem;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .feature {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .feature-title {
+            font-family: var(--mono);
+            font-size: 0.95rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .code-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            overflow-x: auto;
+        }
+
+        .code-block .key { color: var(--blue); }
+        .code-block .string { color: var(--green); }
+        .code-block .bracket { color: var(--text-dim); }
+        .code-block .comment { color: #6e7681; }
+
+        .install-cmd {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 24px;
+            font-family: var(--mono);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .install-cmd .prompt { color: var(--green); }
+        .install-cmd .cmd { color: var(--text); }
+
+        .steps {
+            counter-reset: step;
+        }
+
+        .step {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 16px;
+            position: relative;
+            padding-left: 64px;
+        }
+
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 24px;
+            top: 24px;
+            font-family: var(--mono);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .step-title {
+            font-family: var(--mono);
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .step-code {
+            background: var(--bg);
+            border-radius: 4px;
+            padding: 12px 16px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            overflow-x: auto;
+        }
+
+        .step-code .prompt { color: var(--green); }
+        .step-code .cmd { color: var(--text); }
+
+        footer {
+            padding: 48px 0;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav style="display: flex; justify-content: flex-end; padding: 20px 0;">
+            <a href="https://github.com/nburnet1/ignition-package-maker" style="color: var(--text-dim); text-decoration: none; font-family: var(--mono); font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                GitHub
+            </a>
+        </nav>
+
+        <header>
+            <div class="logo">ipm</div>
+            <p class="tagline">Ignition Package Maker - convert script-python modules into publishable Python packages.</p>
+            <div class="badges">
+                <span class="badge">jython</span>
+                <span class="badge">ignition</span>
+                <span class="badge">ipm</span>
+                <span class="badge">pip install ipm</span>
+            </div>
+        </header>
+
+        <!-- Install -->
+        <section>
+            <h2><span class="accent">#</span> Install</h2>
+            <div class="install-cmd">
+                <span class="prompt">$</span>
+                <span class="cmd">pip install ipm</span>
+            </div>
+        </section>
+
+        <!-- Quick demo -->
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <span class="terminal-title">terminal</span>
+            </div>
+            <div class="terminal-body">
+                <span class="comment"># Initialize</span><br>
+                <span class="prompt">$</span> <span class="cmd">ipm init</span><br>
+                <span class="output">  Discovered modules: foomes</span><br>
+                <span class="output">  Created ipm.json</span><br><br>
+                <span class="comment"># Build your package</span><br>
+                <span class="prompt">$</span> <span class="cmd">ipm build</span><br>
+                <span class="output">  Building </span><span class="highlight">foomes</span><span class="output">@0.1.0</span><br>
+                <span class="output">  foomes/ (20 modules)</span><br>
+                <span class="output">  Built </span><span class="highlight">foomes</span><span class="output">@0.1.0</span><br><br>
+                <span class="comment"># Publish with standard Python tooling</span><br>
+                <span class="prompt">$</span> <span class="cmd">cd ipm/foomes && python -m build</span><br>
+                <span class="prompt">$</span> <span class="cmd">twine upload dist/*</span><br><br>
+                <span class="comment"># Consumers install with pip</span><br>
+                <span class="prompt">$</span> <span class="cmd">pip install --target ./site-packages foomes</span>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <section>
+            <h2><span class="accent">#</span> How it works</h2>
+            <p style="color: var(--text-dim); margin-bottom: 24px;">
+                ipm converts Ignition's <code>code.py</code> convention into standard Python modules.
+            </p>
+            <div class="conversion">
+                <div class="conversion-block">
+                    <span class="label">Ignition project</span>
+                    <span class="dir">script-python/</span><br>
+                    &nbsp;&nbsp;<span class="dir">foomes/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">workorders/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">code.py</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">resource.json</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">alarms/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">code.py</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">resource.json</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">reporting/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">code.py</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">resource.json</span>
+                </div>
+                <div class="conversion-arrow">&rarr;</div>
+                <div class="conversion-block">
+                    <span class="label">Python package</span>
+                    <span class="dir">src/</span><br>
+                    &nbsp;&nbsp;<span class="dir">foomes/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">__init__.py</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">workorders.py</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">alarms.py</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">reporting.py</span><br>
+                    <span class="file">pyproject.toml</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Started -->
+        <section>
+            <h2><span class="accent">#</span> Getting started</h2>
+            <p style="color: var(--text-dim); margin-bottom: 24px;">
+                A minimal setup with Docker Compose to develop and test Ignition packages locally.
+            </p>
+
+            <div class="code-block" style="margin-bottom: 24px;">
+                <span class="comment"># docker-compose.yaml</span><br><br>
+                <span class="key">services</span>:<br>
+                &nbsp;&nbsp;<span class="key">ignition</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">image</span>: <span class="string">inductiveautomation/ignition:latest</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ports</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="string">"8088:8088"</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">environment</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ACCEPT_IGNITION_EULA</span>: <span class="string">"Y"</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">IGNITION_EDITION</span>: <span class="string">standard</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">GATEWAY_ADMIN_USERNAME</span>: <span class="string">admin</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">GATEWAY_ADMIN_PASSWORD</span>: <span class="string">password</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">volumes</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="string">./ignition:/usr/local/bin/ignition/data/projects</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="string">./site-packages:/usr/local/bin/ignition/user-lib/pylib/site-packages</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="string">ignition-data:/usr/local/bin/ignition/data</span><br><br>
+                <span class="key">volumes</span>:<br>
+                &nbsp;&nbsp;<span class="key">ignition-data</span>:
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-title">Set up your project</div>
+                    <div class="step-desc">Create the directory structure and start the gateway.</div>
+                    <div class="step-code">
+                        <span class="prompt">$</span> <span class="cmd">mkdir -p ignition site-packages</span><br>
+                        <span class="prompt">$</span> <span class="cmd">docker compose up -d</span>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Install packages</div>
+                    <div class="step-desc">Use pip to install ipm packages into your site-packages directory.</div>
+                    <div class="step-code">
+                        <span class="prompt">$</span> <span class="cmd">pip install --target ./site-packages foomes</span>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Freeze requirements</div>
+                    <div class="step-desc">Lock your installed packages so others can reproduce the environment.</div>
+                    <div class="step-code">
+                        <span class="prompt">$</span> <span class="cmd">pip freeze --path ./site-packages > requirements.txt</span><br><br>
+                        <span class="comment"># Reinstall from lockfile</span><br>
+                        <span class="prompt">$</span> <span class="cmd">pip install --target ./site-packages -r requirements.txt</span>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Publish your own packages</div>
+                    <div class="step-desc">Initialize ipm in your Ignition project and build a distributable package.</div>
+                    <div class="step-code">
+                        <span class="prompt">$</span> <span class="cmd">pip install ipm</span><br>
+                        <span class="prompt">$</span> <span class="cmd">ipm init</span><br>
+                        <span class="prompt">$</span> <span class="cmd">ipm build</span><br>
+                        <span class="prompt">$</span> <span class="cmd">cd ipm/foomes && python -m build && twine upload dist/*</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section>
+            <h2><span class="accent">#</span> Features</h2>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-title">Zero config discovery</div>
+                    <div class="feature-desc">Auto-detects Ignition projects and script-python modules. Just run <code>ipm init</code>.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Multi-package repos</div>
+                    <div class="feature-desc">Define multiple packages from one repo. Build all at once or target a specific one.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Import validation</div>
+                    <div class="feature-desc">Scans your code for external imports and blocks the build if any module is missing from exports.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">pip does the rest</div>
+                    <div class="feature-desc">No custom registry. Publish to PyPI, install with pip. Version resolution, lockfiles, uninstall - all built in.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Jython compatible</div>
+                    <div class="feature-desc">Output is pure Python, no C extensions. Works with Ignition's Jython 2.7 runtime.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Non-intrusive</div>
+                    <div class="feature-desc">Your Ignition project stays unchanged. ipm only reads your scripts and outputs a separate package.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Config -->
+        <section>
+            <h2><span class="accent">#</span> Configuration</h2>
+            <div class="code-block">
+                <span class="comment">// ipm.json</span><br>
+                <span class="bracket">{</span><br>
+                &nbsp;&nbsp;<span class="key">"projects"</span>: <span class="bracket">{</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"global"</span>: <span class="string">"ignition/global/ignition/script-python"</span><br>
+                &nbsp;&nbsp;<span class="bracket">}</span>,<br>
+                &nbsp;&nbsp;<span class="key">"packages"</span>: <span class="bracket">{</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"foomes"</span>: <span class="bracket">{</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"version"</span>: <span class="string">"0.1.0"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"source"</span>: <span class="string">"global"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"exports"</span>: <span class="bracket">[</span><span class="string">"foomes"</span><span class="bracket">]</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="bracket">}</span><br>
+                &nbsp;&nbsp;<span class="bracket">}</span><br>
+                <span class="bracket">}</span>
+            </div>
+        </section>
+
+        <footer>
+            <p style="margin-bottom: 12px;">
+                <a href="https://github.com/nburnet1/ignition-package-maker" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    nburnet1/ignition-package-maker
+                </a>
+            </p>
+            <p style="margin-bottom: 8px;">Built for the <a href="https://inductiveautomation.com">Ignition</a> community.</p>
+            <p style="font-size: 0.75rem;">Not affiliated with or endorsed by Inductive Automation.</p>
+        </footer>
+    </div>
+</body>
+</html>
