@@ -10,14 +10,14 @@ readme = "README.md"
 license = "GPL-3.0-only"
 requires-python = ">=3.11"
 authors = [
-    { name = "Noah Burnette", email = "noah.burnette.ext@verkor.com" },
+    { name = "Noah Burnette" },
 ]
-keywords = ["ignition", "scada", "package-manager", "inductive-automation"]
+keywords = ["ignition", "scada", "jython", "ipm", "inductive-automation"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
