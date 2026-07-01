@@ -184,11 +184,10 @@ build-backend = "hatchling.build"
 name = "{pkg.name}"
 version = "{version}"
 description = "{description}"
-keywords = ["jython", "ignition", "ipm"]
+keywords = ["jython", "ignition", "ignition-{ignition_version}", "ipm"]
 classifiers = [
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: Implementation :: Jython",
-    "Framework :: Ignition :: {ignition_version}",
 ]
 
 [tool.hatch.build.targets.wheel]
