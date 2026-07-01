@@ -27,8 +27,6 @@ ipm takes Ignition's `code.py` / `resource.json` directory convention and output
 
 Consumers install with `pip install --target ./site-packages your-package` and mount `site-packages` into the gateway.
 
-Import validation catches missing modules before you ship.
-
 ## Documentation
 
 [https://nburnet1.github.io/ignition-package-maker](https://nburnet1.github.io/ignition-package-maker)
