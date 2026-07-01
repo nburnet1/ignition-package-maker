@@ -31,7 +31,6 @@ class TestDiscoverModules:
 
 class TestConvertModule:
     def test_leaf_modules_become_py_files(self, tmp_path: Path):
-        """script-python/infra/repo/code.py -> infra/repo.py"""
         source = tmp_path / "source" / "infra"
         target = tmp_path / "target" / "infra"
         (source / "repo").mkdir(parents=True)
@@ -49,7 +48,6 @@ class TestConvertModule:
         assert "class Cache" in (target / "cache.py").read_text()
 
     def test_nested_modules_become_subpackages(self, tmp_path: Path):
-        """script-python/entity/node/node/code.py -> entity/node/__init__.py + node.py"""
         source = tmp_path / "source" / "entity"
         target = tmp_path / "target" / "entity"
         (source / "node" / "node").mkdir(parents=True)
@@ -66,7 +64,6 @@ class TestConvertModule:
         assert "class Node" in (target / "node" / "node.py").read_text()
 
     def test_code_py_at_package_level(self, tmp_path: Path):
-        """If a dir has both code.py AND subdirs, code.py becomes __init__.py content."""
         source = tmp_path / "source" / "util"
         target = tmp_path / "target" / "util"
         (source / "sub").mkdir(parents=True)
@@ -77,10 +74,9 @@ class TestConvertModule:
 
         assert (target / "__init__.py").read_text() == "# util top-level code\nVERSION = 1\n"
         assert (target / "sub.py").read_text() == "helper = 1"
-        assert count == 2  # __init__.py with content + sub.py
+        assert count == 2
 
     def test_empty_init_when_no_code_py(self, tmp_path: Path):
-        """Package dirs without their own code.py get empty __init__.py."""
         source = tmp_path / "source" / "infra"
         target = tmp_path / "target" / "infra"
         (source / "repo").mkdir(parents=True)
@@ -92,73 +88,55 @@ class TestConvertModule:
 
 
 class TestConfig:
-    def test_load_multi_package(self, tmp_path: Path):
+    def test_load_minimal(self, tmp_path: Path):
         config_data = {
             "projects": {
                 "global": "ignition/global/ignition/script-python",
             },
             "packages": {
-                "verkor-infrastructure": {
-                    "version": "1.0.0",
-                    "description": "Core infra",
+                "slowrm": {
                     "source": "global",
-                    "exports": ["infrastructure"],
-                    "dependencies": ["verkor-entity>=0.1.0"],
-                },
-                "verkor-entity": {
-                    "version": "0.5.0",
-                    "source": "global",
-                    "exports": ["entity"],
+                    "exports": ["slowrm"],
                 },
             },
         }
         (tmp_path / "ipm.json").write_text(json.dumps(config_data))
 
         config = Config.load(tmp_path)
-        assert "verkor-infrastructure" in config.packages
-        assert "verkor-entity" in config.packages
-        assert config.packages["verkor-infrastructure"].version == "1.0.0"
-        assert config.packages["verkor-infrastructure"].dependencies == ["verkor-entity>=0.1.0"]
-        assert config.packages["verkor-entity"].exports == ["entity"]
+        assert "slowrm" in config.packages
+        assert config.packages["slowrm"].source == "global"
+        assert config.packages["slowrm"].exports == ["slowrm"]
 
     def test_resolve_source_path(self, tmp_path: Path):
         config = Config(
             projects={"global": "ignition/global/ignition/script-python"},
             packages={},
         )
-        pkg = PackageConfig(name="test", version="1.0.0", source="global")
+        pkg = PackageConfig(name="test", source="global")
         assert config.resolve_source_path(pkg) == "ignition/global/ignition/script-python"
 
     def test_resolve_source_path_direct(self, tmp_path: Path):
         config = Config(projects={}, packages={})
-        pkg = PackageConfig(name="test", version="1.0.0", source="some/path/script-python")
+        pkg = PackageConfig(name="test", source="some/path/script-python")
         assert config.resolve_source_path(pkg) == "some/path/script-python"
 
-    def test_load_legacy_format(self, tmp_path: Path):
-        """Backwards compat with old single-package format."""
+    def test_multiple_packages(self, tmp_path: Path):
         config_data = {
-            "package": {
-                "name": "old-style",
-                "version": "0.1.0",
-                "source": "script-python",
-                "exports": ["mymod"],
-            }
+            "projects": {"global": "ignition/global/ignition/script-python"},
+            "packages": {
+                "pkg-a": {"source": "global", "exports": ["mod_a"]},
+                "pkg-b": {"source": "global", "exports": ["mod_b"]},
+            },
         }
         (tmp_path / "ipm.json").write_text(json.dumps(config_data))
 
         config = Config.load(tmp_path)
-        assert "old-style" in config.packages
-        assert config.packages["old-style"].exports == ["mymod"]
+        assert "pkg-a" in config.packages
+        assert "pkg-b" in config.packages
 
 
 class TestNoHoisting:
-    """Exports keep their original module name - no wrapper package."""
-
     def test_single_export_preserves_module(self, tmp_path: Path):
-        """
-        infrastructure/repo/code.py -> src/infrastructure/repo.py
-        (NOT src/infra/infrastructure/repo.py)
-        """
         source = tmp_path / "script-python" / "infrastructure"
         src = tmp_path / "output" / "src"
         target = src / "infrastructure"
@@ -173,5 +151,4 @@ class TestNoHoisting:
         assert (target / "__init__.py").exists()
         assert (target / "repo.py").exists()
         assert (target / "orm.py").exists()
-        # No wrapper directory
         assert not (src / "infra").exists()

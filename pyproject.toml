@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ignition-package-maker"
-version = "0.0.0"
+version = "0.0.1"
 description = "Ignition Package Maker - convert Ignition script-python modules into publishable Python packages"
 readme = "README.md"
 license = "GPL-3.0-only"

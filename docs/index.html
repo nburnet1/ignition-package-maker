@@ -475,16 +475,16 @@
                     <div class="feature-desc">Define multiple packages from one repo. Build all at once or target a specific one.</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-title">Import validation</div>
-                    <div class="feature-desc">Scans your code for external imports and blocks the build if any module is missing from exports.</div>
+                    <div class="feature-title">Simple Config</div>
+                    <div class="feature-desc">Configuration is a basic map between your ignition scripts and packages.</div>
                 </div>
                 <div class="feature">
                     <div class="feature-title">pip does the rest</div>
                     <div class="feature-desc">No custom registry. Publish to PyPI, install with pip. Version resolution, lockfiles, uninstall - all built in.</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-title">Jython compatible</div>
-                    <div class="feature-desc">Output is pure Python, no C extensions. Works with Ignition's Jython 2.7 runtime.</div>
+                    <div class="feature-title">Ignition First</div>
+                    <div class="feature-desc">Include system.* and any other Ignition native functionality.</div>
                 </div>
                 <div class="feature">
                     <div class="feature-title">Non-intrusive</div>
@@ -504,13 +504,13 @@
                 &nbsp;&nbsp;<span class="bracket">}</span>,<br>
                 &nbsp;&nbsp;<span class="key">"packages"</span>: <span class="bracket">{</span><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"foomes"</span>: <span class="bracket">{</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"version"</span>: <span class="string">"0.1.0"</span>,<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"source"</span>: <span class="string">"global"</span>,<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"exports"</span>: <span class="bracket">[</span><span class="string">"foomes"</span><span class="bracket">]</span><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="bracket">}</span><br>
                 &nbsp;&nbsp;<span class="bracket">}</span><br>
                 <span class="bracket">}</span>
             </div>
+            <p style="color: var(--text-dim); margin-top: 16px; font-size: 0.9rem;">Version, description, dependencies, and license live in <code>pyproject.toml</code> (created on first build).</p>
         </section>
 
         <footer>
