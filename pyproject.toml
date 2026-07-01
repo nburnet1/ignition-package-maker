@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ignition-package-maker"
-version = "0.0.2"
+version = "0.0.3"
 description = "Ignition Package Maker - convert Ignition script-python modules into publishable Python packages"
 readme = "README.md"
 license = "GPL-3.0-only"
@@ -12,7 +12,7 @@ requires-python = ">=3.11"
 authors = [
     { name = "Noah Burnette" },
 ]
-keywords = ["ignition", "scada", "jython", "ipm", "inductive-automation"]
+keywords = ["ignition", "jython", "ipm"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
